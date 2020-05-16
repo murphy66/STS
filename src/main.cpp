@@ -13,6 +13,13 @@ int main()
 	sf::View view(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
 	window.setView(view);
 
+	auto player = Player::CreateIronclad();
+	Floor floor(player.get());
+	player->StartFloor();
+	player->BeginTurn();
+	
+    FloorRenderer renderer(floor);
+    
 	while (window.isOpen())
     {
         sf::Event event;
@@ -24,8 +31,7 @@ int main()
 
         window.clear(sf::Color::Black);
 
-        CardRenderer().Draw(window, {0.5f, 0.5f}, CardAttack());
-        CardRenderer().Draw(window, {0.6f, 0.5f}, CardDefend());
+        renderer.Draw(window);
         
         window.display();
     }

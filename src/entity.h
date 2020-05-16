@@ -14,19 +14,21 @@ class Card;
 class Entity
 {
 public:
+	int maxHp = 0;
 	int hp = 0;
 	int block = 0;
 	int str = 0;
 	int dex = 0;
 
 public:
-	constexpr explicit Entity(int hp) noexcept : hp(hp) {}
+	constexpr explicit Entity(int hp) noexcept : maxHp(hp), hp(hp) {}
 	virtual ~Entity() {}
 	
 	void Damage(int dmg) noexcept;	
 
 	[[nodiscard]] constexpr int GetBlock() const noexcept { return block; }
 	[[nodiscard]] constexpr int GetHp() const noexcept { return hp; }
+	[[nodiscard]] constexpr int GetMaxHp() const noexcept { return maxHp; }
 	[[nodiscard]] constexpr bool IsAlive() const noexcept { return hp > 0; }
 	void LogMe() const;	
 };
@@ -46,8 +48,8 @@ public:
 	Player(const Player&) = delete;
 	Player& operator=(const Player&) = delete;
 
-	[[nodiscard]] const vector<Card*>& GetHand() const { return hand; }
-	[[nodiscard]] constexpr int GetEnergy() const noexcept { return energy; }
+	[[nodiscard]] const auto& GetHand() const { return hand; }
+	[[nodiscard]] constexpr auto GetEnergy() const noexcept { return energy; }
 
 	void AddCard(unique_ptr<Card>&& c);
 	void StartFloor();
