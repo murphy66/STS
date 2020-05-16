@@ -8,7 +8,7 @@ class Floor
 	vector<std::unique_ptr<Enemy>> enemies;
 
 public:
-	Floor(Player* player);
+	Floor(Player* player, std::vector<std::unique_ptr<Enemy>>&& es);
 	void DoFloor();
 	[[nodiscard]] bool IsFloorDone();
 	[[nodiscard]] const auto GetPlayer() const noexcept { return player; }

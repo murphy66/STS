@@ -14,11 +14,15 @@ int main()
 	window.setView(view);
 
 	auto player = Player::CreateIronclad();
-	Floor floor(player.get());
+	vector<unique_ptr<Enemy>> es;
+	es.push_back(move(make_unique<JawWorm>()));
+	es.push_back(move(make_unique<JawWorm>()));
+	Floor floor(player.get(), move(es));
 	player->StartFloor();
 	player->BeginTurn();
 	
     FloorRenderer renderer(floor);
+    renderer.CreateButton({0.85f, 0.8f}, {0.1f, 0.1f}, "End\nTurn", 0.04f, []() { std::cout << "End Turn" << std::endl; });
     
 	while (window.isOpen())
     {
@@ -27,6 +31,14 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            if (event.type == sf::Event::MouseButtonPressed)
+			{
+			    if (event.mouseButton.button == sf::Mouse::Left)
+			    {
+			    	renderer.Click(window, event.mouseButton);
+			    }
+			}
         }
 
         window.clear(sf::Color::Black);

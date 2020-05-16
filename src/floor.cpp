@@ -3,9 +3,8 @@
 #include <iostream>
 
 
-Floor::Floor(Player* player) : player(player)
+Floor::Floor(Player* player, std::vector<std::unique_ptr<Enemy>>&& es): player(player) , enemies(std::move(es))
 {
-	enemies.emplace_back(std::make_unique<JawWorm>());
 }
 
 void Floor::DoFloor()
