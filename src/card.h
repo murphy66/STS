@@ -6,20 +6,27 @@
 class Player;
 class Entity;
 
+enum class CardType
+{	
+	Attack,
+	Defend
+};
 
 class Card
 {
 protected:
 	int cost = 0;
+	CardType type;
 
 public:
-	Card(int cost) : cost(cost) {}
+	Card(int cost, CardType type) : cost(cost), type(type) {}
 	virtual ~Card() {}
 
 	virtual bool Play(Player* p, Entity* e) = 0;
 	virtual std::string ToString() { return "Unknown Card!"; }
 
-	[[nodiscard]] constexpr int Cost() { return cost; }
+	[[nodiscard]] constexpr int Cost() const noexcept { return cost; }
+	[[nodiscard]] constexpr CardType Type() const noexcept { return type; }
 	void LogMe() { Log(ToString()); }
 };
 
@@ -27,7 +34,7 @@ class CardAttack : public Card
 {
 	const int dmg = 0;
 public:
-	explicit CardAttack(int dmg = 5) : Card(1), dmg(dmg) {}
+	explicit CardAttack(int dmg = 5) : Card(1, CardType::Attack), dmg(dmg) {}
 	bool Play(Player* p, Entity* e) override;
 	std::string ToString() override;
 };
@@ -36,7 +43,7 @@ class CardDefend : public Card
 {
 	int block = 0;
 public:
-	explicit CardDefend(int block = 5) : Card(1), block(block) {}
+	explicit CardDefend(int block = 5) : Card(1, CardType::Defend), block(block) {}
 	bool Play(Player* p, Entity* e) override;
 	std::string ToString() override;
 };

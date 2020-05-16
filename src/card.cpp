@@ -20,7 +20,7 @@ std::string CardAttack::ToString()
 bool CardDefend::Play(Player* p, Entity* e) 
 {
 	LogMe();
-	p->AddBlock(block);
+	p->block += block; 
 	return true;
 }
 
