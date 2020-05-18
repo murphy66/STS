@@ -25,7 +25,7 @@ set_property(TARGET Tests PROPERTY CXX_STANDARD 17)
 
 
 # add the executable
-add_executable(ToyProj src/main.cpp src/card.cpp src/entity.cpp src/floor.cpp src/renderer.cpp)
+add_executable(ToyProj src/main.cpp src/card.cpp src/entity.cpp src/floor.cpp src/consolerenderer.cpp src/graphicsrenderer.cpp)
 set_property(TARGET ToyProj PROPERTY CXX_STANDARD 17)
 target_link_libraries(ToyProj sfml-graphics)
 
