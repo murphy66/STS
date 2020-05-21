@@ -19,17 +19,19 @@ public:
 	int block = 0;
 	int str = 0;
 	int dex = 0;
+	int vulnerable = 0;
 
 public:
 	constexpr explicit Entity(int hp) noexcept : maxHp(hp), hp(hp) {}
 	virtual ~Entity() {}
 	
-	void Damage(int dmg) noexcept;	
+	void Damage(int dmg) noexcept;
 
 	[[nodiscard]] constexpr int GetBlock() const noexcept { return block; }
 	[[nodiscard]] constexpr int GetHp() const noexcept { return hp; }
 	[[nodiscard]] constexpr int GetMaxHp() const noexcept { return maxHp; }
 	[[nodiscard]] constexpr bool IsAlive() const noexcept { return hp > 0; }
+	void EndTurn();
 	void LogMe() const;	
 };
 

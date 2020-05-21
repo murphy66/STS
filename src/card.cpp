@@ -1,20 +1,25 @@
 #include "card.h"
 
-bool CardAttack::Play(Player* p, Entity* e) 
+bool Card::Play(Player* p, Entity* e)
 {
 	LogMe();
-	if (!e)
+	if (needsTarget && !e)
 	{
 		Log("Must have a valid target");
-		return false;
+		return false;		
 	}
-	e->Damage(dmg);
+	if (dmg > 0)
+		e->Damage(dmg);
+	if (block > 0)
+		p->block += block;
 	return true;
 }
 
-bool CardDefend::Play(Player* p, Entity* e) 
+bool CardBash::Play(Player* p, Entity* e)
 {
-	LogMe();
-	p->block += block; 
+	if (!Card::Play(p, e))
+		return false;
+
+	e->vulnerable += 2;
 	return true;
 }

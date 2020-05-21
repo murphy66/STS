@@ -9,20 +9,23 @@ class Entity;
 enum class CardType
 {	
 	Attack,
-	Defend
+	Defend,
+	Bash
 };
 
 class Card
 {
-protected:
+public:
 	int cost = 0;
+	int dmg = 0;
+	int block = 0;
+	bool needsTarget = false;
 	CardType type;
 
-public:
 	Card(int cost, CardType type) : cost(cost), type(type) {}
 	virtual ~Card() {}
 
-	virtual bool Play(Player* p, Entity* e) = 0;
+	virtual bool Play(Player* p, Entity* e);
 	virtual std::string ToString() const { return "Unknown Card!"; }
 
 	[[nodiscard]] constexpr int Cost() const noexcept { return cost; }
@@ -31,19 +34,24 @@ public:
 };
 
 class CardAttack : public Card
-{
-	const int dmg = 0;
+{	
 public:
-	explicit CardAttack(int dmg = 6) : Card(1, CardType::Attack), dmg(dmg) {}
-	bool Play(Player* p, Entity* e) override;
+	explicit CardAttack(int dmg = 6) : Card(1, CardType::Attack) { this->dmg = dmg; needsTarget = true; }
 	std::string ToString() const override { return "Attack!"; }
 };
 
 class CardDefend : public Card
 {
-	int block = 0;
 public:
-	explicit CardDefend(int block = 5) : Card(1, CardType::Defend), block(block) {}
-	bool Play(Player* p, Entity* e) override;
+	explicit CardDefend(int block = 5) : Card(1, CardType::Defend) { this->block = block; }
 	std::string ToString() const override { return "Defend!"; }
+};
+
+class CardBash : public Card
+{
+public:
+	int vulnerable = 2;
+	explicit CardBash() : Card(2, CardType::Bash) { dmg = 8; needsTarget = true; }
+	virtual bool Play(Player* p, Entity* e) override;
+	std::string ToString() const override { return "Bash!"; }	
 };

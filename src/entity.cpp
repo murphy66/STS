@@ -12,6 +12,9 @@ void Entity::LogMe() const
 
 void Entity::Damage(int dmg) noexcept 
 {
+	if (vulnerable > 0)
+		dmg = dmg + dmg / 2;
+
 	int d = dmg;
 	dmg = std::max(dmg - block, 0);
 	block = std::max(block - d, 0);
@@ -19,6 +22,12 @@ void Entity::Damage(int dmg) noexcept
 		return;
 
 	hp = std::max(hp - dmg, 0);
+}
+
+void Entity::EndTurn()
+{
+	block = 0;
+	if (vulnerable > 0) --vulnerable;
 }
 
 void Player::AddCard(unique_ptr<Card>&& c)
@@ -129,7 +138,8 @@ void Player::BeginTurn()
 }
 
 void Player::EndTurn()
-{	
+{
+	Entity::EndTurn();
 	while(!hand.empty())
 		Discard(0);
 }
@@ -142,6 +152,7 @@ void Player::EndTurn()
 		p->AddCard(std::make_unique<CardDefend>());
 		p->AddCard(std::make_unique<CardAttack>());
 	}
+	p->AddCard(std::make_unique<CardBash>());
 	return std::move(p);
 }
 

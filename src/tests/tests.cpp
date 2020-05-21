@@ -63,7 +63,7 @@ TEST_CASE("Test Defend", "[Test Cards]")
 	p.AddCard(make_unique<CardDefend>(5));
 	p.StartFloor();
 	p.DrawCard();
-	p.PlayCard(0, nullptr);
+	REQUIRE(p.PlayCard(0, nullptr));
 	REQUIRE(p.GetBlock() == 5);
 }
 
@@ -74,6 +74,17 @@ TEST_CASE("Test Attack", "[Test Cards]")
 	p.AddCard(make_unique<CardAttack>(5));
 	p.StartFloor();
 	p.DrawCard();
-	p.PlayCard(0, &e);
+	REQUIRE(p.PlayCard(0, &e));
 	REQUIRE(e.GetHp() == 15);
+}
+
+TEST_CASE("Test End Turn", "[End Turn]")
+{
+	Player p;
+	p.AddCard(make_unique<CardDefend>(5));
+	p.StartFloor();
+	p.DrawCard();
+	REQUIRE(p.PlayCard(0, nullptr));
+	p.EndTurn();
+	REQUIRE(p.block == 0);
 }
