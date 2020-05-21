@@ -26,6 +26,7 @@ public:
 	[[nodiscard]] const auto GetPlayer() const noexcept { return player; }
 	[[nodiscard]] const auto& GetEnemies() const noexcept { return enemies; }
 	bool PlayCard(int cardIdx, int enemyIdx);
+	bool PlayCard(int cardIdx, Entity* e);
 
 	void StartFloor();
 	void EndTurn();

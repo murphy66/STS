@@ -31,7 +31,6 @@ void GraphicsRenderedGame()
 	auto player = Player::CreateIronclad();
 	vector<unique_ptr<Enemy>> es;
 	es.push_back(move(make_unique<JawWorm>()));
-	es.push_back(move(make_unique<JawWorm>()));
 	Floor floor(player.get(), move(es));
 	renderer.SetFloor(floor);
 

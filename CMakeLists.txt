@@ -32,8 +32,8 @@ target_link_libraries(ToyProj sfml-graphics)
 
 #file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/bin)
 
-add_custom_command(
-        TARGET ToyProj POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_SOURCE_DIR}/assets/BADABB__.TTF
-                $<TARGET_FILE_DIR:${PROJECT_NAME}>/BADABB__.TTF)
+add_custom_command(TARGET ToyProj POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/assets/BADABB__.TTF 
+	$<TARGET_FILE_DIR:${PROJECT_NAME}>/BADABB__.TTF)
+
+add_custom_command(TARGET ToyProj POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/assets/ironclad.png
+	$<TARGET_FILE_DIR:${PROJECT_NAME}>/ironclad.png)

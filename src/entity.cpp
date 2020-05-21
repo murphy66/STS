@@ -18,7 +18,7 @@ void Entity::Damage(int dmg) noexcept
 	if (dmg == 0)
 		return;
 
-	hp -= dmg;
+	hp = std::max(hp - dmg, 0);
 }
 
 void Player::AddCard(unique_ptr<Card>&& c)

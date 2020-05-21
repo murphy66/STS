@@ -8,6 +8,8 @@
 #include <condition_variable>
 
 
+class EntityRenderer;
+
 class GraphicsInput 
 {
 	std::vector<std::function<bool(Floor&)>> actions;	
@@ -31,40 +33,51 @@ struct Button
 
 
 class FloorRenderer
-{
+{	
 	Floor* floor = nullptr;
-	sf::Font font;
 	std::vector<Button> buttons;	
+	int selectedCardIdx = -1;
+	vector<EntityRenderer> entityRenderers;
 
 public:
 	GraphicsInput input;
 
 	FloorRenderer();
 
-	void SetFloor(Floor& floor) { this->floor = &floor; }
-
+	void SetFloor(Floor& floor);
 	void Draw(sf::RenderWindow& w);
-	void DrawPlayer(sf::RenderWindow& w);
-	void DrawPlayerHand(sf::RenderWindow& w);
-	void DrawEnemies(sf::RenderWindow& w);
-	void DrawHealthBar(sf::RenderWindow& w, const Entity& e, sf::Vector2f pos);
-	void DrawText(sf::RenderWindow& w, const std::string& s, const sf::Color& col, double size, sf::Vector2f pos);
-
 	void CreateButton(sf::Vector2f pos, sf::Vector2f size, const std::string& txt, float txtSize, 
 		const std::function<void()>& cb) { buttons.emplace_back(pos, size, txt, txtSize, cb); }	
-	void DrawButtons(sf::RenderWindow& w);
-	void CreateEndTurnButton();
-
-	void Click(sf::RenderWindow& w, const sf::Event::MouseButtonEvent& e) const;
-
+	void Click(sf::RenderWindow& w, const sf::Event::MouseButtonEvent& e);
 	void UpdateGameState();
 };
 
 
 class CardRenderer
 {
-public:
-	sf::Vector2f size { 0.08f, 0.14f};
+private:
+	const sf::Vector2f size { 0.08f, 0.14f };
+	const sf::Vector2f delta { 0.12f, 0.0f };
+	const sf::Vector2f cardPos { 0.2f, 0.8f };	
+	void Draw(sf::RenderWindow& w, const sf::Vector2f& pos, const Card& card, bool selected) const;
 
-	void Draw(sf::RenderWindow& w, const sf::Vector2f& pos, const Card& card) const;
+public:
+	void Draw(sf::RenderWindow& w, size_t cardIdx, const Card& card, bool selected) const;
+	[[nodiscard]] int GetCardIdxFromCoords(double x, double y) const;
+};
+
+class EntityRenderer
+{
+private:
+	sf::Texture texCharacter;
+	sf::Vector2f pos;
+	sf::Vector2f characterSize{0.15f, 0.25f};	
+
+public:
+	Entity* entity = nullptr;
+	
+	EntityRenderer(Entity* entity, sf::Vector2f pos);
+	void Draw(sf::RenderWindow& w) const;
+	void DrawHealthBar(sf::RenderWindow& w, sf::Vector2f pos) const;
+	[[nodiscard]] bool HitTest(sf::Vector2f c) const;	
 };

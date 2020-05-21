@@ -23,7 +23,7 @@ public:
 	virtual ~Card() {}
 
 	virtual bool Play(Player* p, Entity* e) = 0;
-	virtual std::string ToString() { return "Unknown Card!"; }
+	virtual std::string ToString() const { return "Unknown Card!"; }
 
 	[[nodiscard]] constexpr int Cost() const noexcept { return cost; }
 	[[nodiscard]] constexpr CardType Type() const noexcept { return type; }
@@ -34,9 +34,9 @@ class CardAttack : public Card
 {
 	const int dmg = 0;
 public:
-	explicit CardAttack(int dmg = 5) : Card(1, CardType::Attack), dmg(dmg) {}
+	explicit CardAttack(int dmg = 6) : Card(1, CardType::Attack), dmg(dmg) {}
 	bool Play(Player* p, Entity* e) override;
-	std::string ToString() override;
+	std::string ToString() const override { return "Attack!"; }
 };
 
 class CardDefend : public Card
@@ -45,5 +45,5 @@ class CardDefend : public Card
 public:
 	explicit CardDefend(int block = 5) : Card(1, CardType::Defend), block(block) {}
 	bool Play(Player* p, Entity* e) override;
-	std::string ToString() override;
+	std::string ToString() const override { return "Defend!"; }
 };

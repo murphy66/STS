@@ -4,5 +4,5 @@
 
 inline void Log(std::string_view msg)
 {
-	std::cout << msg << "\n";
+	std::cout << msg << std::endl;
 }

@@ -12,19 +12,9 @@ bool CardAttack::Play(Player* p, Entity* e)
 	return true;
 }
 
-std::string CardAttack::ToString()
-{
-	return "Attack!";
-}
-
 bool CardDefend::Play(Player* p, Entity* e) 
 {
 	LogMe();
 	p->block += block; 
 	return true;
-}
-
-std::string CardDefend::ToString()
-{
-	return "Defend!";
 }

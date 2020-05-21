@@ -15,10 +15,15 @@ Floor::Floor(Player* player, std::vector<std::unique_ptr<Enemy>>&& es)
 
 bool Floor::PlayCard(int cardIdx, int enemyIdx)
 {
+	Enemy* e = (enemyIdx >= 0 && enemyIdx < enemies.size()) ? enemies[enemyIdx].get() : nullptr;
+	return PlayCard(cardIdx, e);
+}
+
+bool Floor::PlayCard(int cardIdx, Entity* e)
+{
 	if (state != FloorState::PlayerTurn)
 		throw std::logic_error("Invalid state change");
 
-	Enemy* e = (enemyIdx >= 0 && enemyIdx < enemies.size()) ? enemies[enemyIdx].get() : nullptr;
 	bool success = player->PlayCard(cardIdx, e);
 	if (IsFloorDone())
 		state = FloorState::FloorEnded;
