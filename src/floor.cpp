@@ -62,12 +62,15 @@ void Floor::DoEnemyTurn()
 	if (state != FloorState::EnemyTurn)
 		throw std::logic_error("Invalid state change");
 
+	for (auto& e : enemies)
+		e->BeginTurn();
+
 	for (const auto& e : enemies)
 	{
 		if (!e->IsAlive())
 			continue;
 
-		e->DoAction(player);
+		e->DoNextAction(player);
 		if (IsFloorDone())
 		{
 			state = FloorState::FloorEnded;

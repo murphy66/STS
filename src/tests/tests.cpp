@@ -74,6 +74,7 @@ TEST_CASE("Test Attack", "[Test Cards]")
 	p.AddCard(make_unique<CardAttack>(5));
 	p.StartFloor();
 	p.DrawCard();
+	REQUIRE(!p.PlayCard(0, &p));		// Can't target player
 	REQUIRE(p.PlayCard(0, &e));
 	REQUIRE(e.GetHp() == 15);
 }

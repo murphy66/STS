@@ -1,7 +1,9 @@
 #include "entity.h"
 #include "logger.h"
+#include "random.h"
 #include <random>
 #include <string>
+#include <sstream>
 
 using std::to_string;
 
@@ -12,6 +14,7 @@ void Entity::LogMe() const
 
 void Entity::Damage(int dmg) noexcept 
 {
+	Log("Got attacked for " + std::to_string(dmg));
 	if (vulnerable > 0)
 		dmg = dmg + dmg / 2;
 
@@ -24,7 +27,7 @@ void Entity::Damage(int dmg) noexcept
 	hp = std::max(hp - dmg, 0);
 }
 
-void Entity::EndTurn()
+void Entity::BeginTurn()
 {
 	block = 0;
 	if (vulnerable > 0) --vulnerable;
@@ -132,14 +135,14 @@ bool Player::Discard(int idx)
 
 void Player::BeginTurn()
 {
+	Entity::BeginTurn();
 	energy = 3;
 	block = 0;
 	DrawCards(5);
 }
 
 void Player::EndTurn()
-{
-	Entity::EndTurn();
+{	
 	while(!hand.empty())
 		Discard(0);
 }
@@ -156,7 +159,47 @@ void Player::EndTurn()
 	return std::move(p);
 }
 
-void JawWorm::DoAction(Player* p) 
+void EnemyAction::Do(Player* p, Enemy* me)
 {
-	p->Damage(7);
+	if (dmg > 0)
+		p->Damage(dmg);
+	if (block > 0)
+		me->block += block;
+	done = true;
+}
+
+void Enemy::DoNextAction(Player* p)
+{
+	if (actions.empty() || actions.back()->done)
+		actions.push_back(std::move(GetNextAction()));
+	return actions.back()->Do(p, this);
+}
+
+[[nodiscard]] std::string Enemy::GetIntention()
+{
+	if (actions.empty() || actions.back()->done)
+		actions.push_back(std::move(GetNextAction()));
+	return actions.back()->ToString();
+}
+
+[[nodiscard]] std::string EnemyAction::ToString()
+{
+	std::stringstream ss;
+	if (dmg > 0)
+		ss << "attacks for " << dmg;
+	if (block > 0)
+		ss << (ss.str().empty() ? "" : " and ") << "buffs block";
+	return ss.str();
+}
+
+JawWorm::JawWorm() : Enemy(Rand(42, 46)) { actions.push_back(Chomp()); }
+
+[[nodiscard]] std::unique_ptr<EnemyAction> JawWorm::GetNextAction()
+{
+	int r = Rand(100);
+	if (r <= 45)
+		return Bellow();
+	if (r <= 75)
+		return Thrash();
+	return Chomp();
 }

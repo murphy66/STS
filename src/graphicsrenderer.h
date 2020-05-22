@@ -9,6 +9,7 @@
 
 
 class EntityRenderer;
+class EnemyRenderer;
 
 class GraphicsInput 
 {
@@ -37,7 +38,8 @@ class FloorRenderer
 	Floor* floor = nullptr;
 	std::vector<Button> buttons;	
 	int selectedCardIdx = -1;
-	vector<EntityRenderer> entityRenderers;
+	std::unique_ptr<EntityRenderer> playerRenderer;
+	vector<EnemyRenderer> enemyRenderers;
 
 public:
 	GraphicsInput input;
@@ -68,7 +70,7 @@ public:
 
 class EntityRenderer
 {
-private:
+protected:
 	sf::Texture texCharacter;
 	sf::Vector2f pos;
 	sf::Vector2f characterSize{0.15f, 0.25f};	
@@ -78,6 +80,12 @@ public:
 	
 	EntityRenderer(Entity* entity, sf::Vector2f pos);
 	void Draw(sf::RenderWindow& w) const;
-	void DrawHealthBar(sf::RenderWindow& w, sf::Vector2f pos) const;
 	[[nodiscard]] bool HitTest(sf::Vector2f c) const;	
+};
+
+class EnemyRenderer : public EntityRenderer
+{
+public:
+	EnemyRenderer(Enemy* e, sf::Vector2f pos) : EntityRenderer(e, pos) {}
+	void Draw(sf::RenderWindow& w) const;
 };

@@ -1,5 +1,6 @@
 #include "graphicsrenderer.h"
 #include <chrono>
+#include <sstream>
 
 
 static void DrawText(sf::RenderWindow& w, const std::string& s, const sf::Color& col, double size, sf::Vector2f pos)
@@ -63,19 +64,21 @@ FloorRenderer::FloorRenderer()
 void FloorRenderer::SetFloor(Floor& floor) 
 {
 	this->floor = &floor;
-	entityRenderers.emplace_back(floor.GetPlayer(), sf::Vector2f{0.2f, 0.25f});
+	playerRenderer = std::make_unique<EntityRenderer>(floor.GetPlayer(), sf::Vector2f{ 0.2f, 0.25f });
 
 	const auto& enemies = floor.GetEnemies();
 	for (size_t i = 0; i < enemies.size(); ++i)
 	{
 		sf::Vector2f pos { 0.6f + i * 0.15f, 0.25f };
-		entityRenderers.emplace_back(enemies[i].get(), pos);
+		enemyRenderers.emplace_back(enemies[i].get(), pos);
 	}
 }
 
 void FloorRenderer::Draw(sf::RenderWindow& w)
 {
-	for (const auto& er : entityRenderers)
+	playerRenderer->Draw(w);
+
+	for (const auto& er : enemyRenderers)
 		er.Draw(w);
 	
 	// Draw cards
@@ -123,6 +126,7 @@ void FloorRenderer::Click(sf::RenderWindow& w, const sf::Event::MouseButtonEvent
 		}
 	}
 
+	// Hittest cards
 	auto card = CardRenderer().GetCardIdxFromCoords(sx, sy);
 	const auto& hand = floor->GetPlayer()->GetHand();
 	if (card >= 0 && card < hand.size())
@@ -139,7 +143,16 @@ void FloorRenderer::Click(sf::RenderWindow& w, const sf::Event::MouseButtonEvent
 		return;
 	}
 
-	for (const auto& e : entityRenderers)
+	// Hittest Player
+	if (playerRenderer->HitTest(c) && selectedCardIdx >= 0 && selectedCardIdx < hand.size())
+	{
+		floor->PlayCard(selectedCardIdx, playerRenderer->entity);
+		selectedCardIdx = -1;
+		return;
+	}
+
+	// Hittest enemies
+	for (const auto& e : enemyRenderers)
 	{
 		if (e.HitTest(c) && selectedCardIdx >= 0 && selectedCardIdx < hand.size())
 		{
@@ -181,8 +194,24 @@ void FloorRenderer::UpdateGameState()
 
 void CardRenderer::Draw(sf::RenderWindow& w, const sf::Vector2f& pos, const Card& card, bool selected) const
 {
+	auto GetCardColor = [](CardType type)
+	{
+		switch(type)
+		{
+		case CardType::Attack:
+			return sf::Color::Red;
+		case CardType::Defend:
+			return sf::Color::Green;
+		case CardType::Bash:
+			return sf::Color::Red;
+		default:
+			return sf::Color(160, 160, 160);
+		}
+	};
+
+
 	sf::RectangleShape rectangle{ size };
-	rectangle.setFillColor(card.Type() == CardType::Attack ? sf::Color::Red : sf::Color::Blue);
+	rectangle.setFillColor(GetCardColor(card.Type()));
 	rectangle.setPosition(pos);
 	if (selected)
 	{
@@ -229,18 +258,40 @@ void EntityRenderer::Draw(sf::RenderWindow& w) const
 	rectangle.setPosition(pos.x, pos.y);
 	w.draw(rectangle);
 
-	DrawHealthBar(w, pos + sf::Vector2f{0.f, characterSize.y});
-}
+	// Draw HealthBar
+	{		
+		std::string hpTxt = std::to_string(entity->GetHp()) + "/" + std::to_string(entity->GetMaxHp());
+		auto txtPos = pos;
+		txtPos.y += characterSize.y;
+		DrawText(w, hpTxt, sf::Color::White, 0.05, txtPos);
+	}
 
-void EntityRenderer::DrawHealthBar(sf::RenderWindow& w, sf::Vector2f pos) const
-{
-	std::string hpTxt = std::to_string(entity->GetHp()) + "/" + std::to_string(entity->GetMaxHp());
-	DrawText(w, hpTxt, sf::Color::White, 0.05, pos);
+	// Draw Block
+	{
+		sf::Vector2f txtPos = pos;
+		txtPos.y += characterSize.y + 0.05f;
+		std::stringstream txt;
+		if (entity->block > 0)
+			txt << "Block: " << entity->block;
+		if (entity->vulnerable > 0)
+			txt << (txt.str().empty() ? "" : "\n") << "vulnerable: " << entity->vulnerable;
+		DrawText(w, txt.str(), sf::Color::White, 0.02, txtPos);
+	}
 }
-
 
 [[nodiscard]] bool EntityRenderer::HitTest(sf::Vector2f c) const
 {
 	return c.x >= pos.x && c.x <= pos.x + characterSize.x &&
 		c.y >= pos.y && c.y <= pos.y + characterSize.y;
+}
+
+void EnemyRenderer::Draw(sf::RenderWindow& w) const
+{
+	EntityRenderer::Draw(w);
+	
+	Enemy* e = static_cast<Enemy*>(entity);
+	auto intTxt = e->GetIntention();
+	auto txtPos = pos;
+	txtPos.y -= 0.03f;
+	DrawText(w, intTxt, sf::Color::White, 0.03, txtPos);
 }

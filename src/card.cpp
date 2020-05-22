@@ -3,7 +3,7 @@
 bool Card::Play(Player* p, Entity* e)
 {
 	LogMe();
-	if (needsTarget && !e)
+	if (needsTarget && (!e || e == p))
 	{
 		Log("Must have a valid target");
 		return false;		
