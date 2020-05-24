@@ -69,13 +69,20 @@ public:
 };
 
 
+enum class EnemyActionType
+{
+	JawWormChomp, JawWormThrash, JawWormBellow
+};
+
 class EnemyAction
 {
 public:
 	int dmg = 0;
 	int block = 0;
 	bool done;
+	EnemyActionType type;
 
+	EnemyAction(EnemyActionType type) : type(type) {}
 	virtual void Do(Player* p, Enemy* me);
 	[[nodiscard]] virtual std::string ToString();
 };
@@ -94,6 +101,7 @@ public:
 	[[nodiscard]] std::string GetIntention();
 
 	[[nodiscard]] std::string ToString() const { return std::string("Bird ") + std::to_string(hp); }
+	[[nodiscard]] bool DidAction(EnemyActionType type, int rounds) const;
 };
 
 class JawWorm : public Enemy
@@ -101,8 +109,8 @@ class JawWorm : public Enemy
 public:
 	JawWorm();
 
-	std::unique_ptr<EnemyAction> Chomp() { auto a = std::make_unique<EnemyAction>(); a->dmg = 12; return a; }
-	std::unique_ptr<EnemyAction> Thrash() { auto a = std::make_unique<EnemyAction>(); a->dmg = 7; a->block = 5; return a; }
-	std::unique_ptr<EnemyAction> Bellow() { auto a = std::make_unique<EnemyAction>(); a->block = 9; return a; }  // TODO gain strength
+	std::unique_ptr<EnemyAction> Chomp() { auto a = std::make_unique<EnemyAction>(EnemyActionType::JawWormChomp); a->dmg = 12; return a; }
+	std::unique_ptr<EnemyAction> Thrash() { auto a = std::make_unique<EnemyAction>(EnemyActionType::JawWormThrash); a->dmg = 7; a->block = 5; return a; }
+	std::unique_ptr<EnemyAction> Bellow() { auto a = std::make_unique<EnemyAction>(EnemyActionType::JawWormBellow); a->block = 9; return a; }  // TODO gain strength
 	[[nodiscard]] std::unique_ptr<EnemyAction> GetNextAction() override;
 };

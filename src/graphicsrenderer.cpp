@@ -253,17 +253,36 @@ EntityRenderer::EntityRenderer(Entity* entity, sf::Vector2f pos) : entity(entity
 
 void EntityRenderer::Draw(sf::RenderWindow& w) const
 {
-	sf::RectangleShape rectangle(characterSize);
-	rectangle.setTexture(&texCharacter);
-	rectangle.setPosition(pos.x, pos.y);
-	w.draw(rectangle);
+	// Draw figure
+	{
+		sf::RectangleShape rectangle(characterSize);
+		rectangle.setTexture(&texCharacter);
+		rectangle.setPosition(pos);
+		w.draw(rectangle);
+	}
 
+	const float hpTextSize = 0.04f;
+	const float hpMeterHeight = 0.05f;
 	// Draw HealthBar
-	{		
+	{
+		const sf::Color hpMeterColor(213, 59, 59);		
+		sf::RectangleShape hpMeter({characterSize.x, hpMeterHeight});
+		auto hpPos = pos + sf::Vector2f(0, characterSize.y);
+		hpMeter.setPosition(hpPos);
+		hpMeter.setFillColor(sf::Color::Transparent);
+		hpMeter.setOutlineThickness(0.003f);
+		hpMeter.setOutlineColor(hpMeterColor);
+		w.draw(hpMeter);
+
+		float hpRatio = static_cast<float>(entity->hp) / entity->maxHp;
+		sf::RectangleShape hpFill({hpRatio * characterSize.x, hpMeterHeight});
+		hpFill.setPosition(hpPos);
+		hpFill.setFillColor(hpMeterColor);
+		w.draw(hpFill);
+
 		std::string hpTxt = std::to_string(entity->GetHp()) + "/" + std::to_string(entity->GetMaxHp());
-		auto txtPos = pos;
-		txtPos.y += characterSize.y;
-		DrawText(w, hpTxt, sf::Color::White, 0.05, txtPos);
+		auto txtPos = hpPos; 
+		DrawText(w, hpTxt, sf::Color::White, hpTextSize, txtPos);
 	}
 
 	// Draw Block

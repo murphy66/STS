@@ -192,14 +192,35 @@ void Enemy::DoNextAction(Player* p)
 	return ss.str();
 }
 
+bool Enemy::DidAction(EnemyActionType type, int rounds) const
+{
+	if (actions.size() < rounds)
+		return false;
+
+	for (int i = 0; i < rounds; ++i)
+	{
+		if (actions[actions.size() - 1 - i]->type != type)
+			return false;
+	}
+	return true;
+}
+
 JawWorm::JawWorm() : Enemy(Rand(42, 46)) { actions.push_back(Chomp()); }
 
 [[nodiscard]] std::unique_ptr<EnemyAction> JawWorm::GetNextAction()
 {
 	int r = Rand(100);
 	if (r <= 45)
+	{
+		if (DidAction(EnemyActionType::JawWormBellow, 1))
+			return GetNextAction();
 		return Bellow();
+	}
 	if (r <= 75)
+	{
+		if (DidAction(EnemyActionType::JawWormThrash, 2))
+			return GetNextAction();
 		return Thrash();
+	}
 	return Chomp();
 }
