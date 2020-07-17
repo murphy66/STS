@@ -309,7 +309,7 @@ void EnemyRenderer::Draw(sf::RenderWindow& w) const
 	EntityRenderer::Draw(w);
 	
 	Enemy* e = static_cast<Enemy*>(entity);
-	auto intTxt = e->GetIntention();
+	auto intTxt = e->GetIntention().ToString();
 	auto txtPos = pos;
 	txtPos.y -= 0.03f;
 	DrawText(w, intTxt, sf::Color::White, 0.03, txtPos);

@@ -33,13 +33,14 @@ public:
 	[[nodiscard]] constexpr int GetMaxHp() const noexcept { return maxHp; }
 	[[nodiscard]] constexpr bool IsAlive() const noexcept { return hp > 0; }
 	void BeginTurn();
-	void LogMe() const;	
+	void LogMe() const;
 };
 
 
 class Player : public Entity
 {
 	vector<unique_ptr<Card>> deck;
+    int maxEnergy = 3;
 	int energy = 3;
 
 	vector<Card*> hand;
@@ -47,6 +48,8 @@ class Player : public Entity
 	vector<Card*> drawPile;
 
 public:
+    static constexpr int nDrawCard = 5;
+
 	Player() : Entity(30) {}
 	Player(const Player&) = delete;
 	Player& operator=(const Player&) = delete;
@@ -65,7 +68,7 @@ public:
 	void BeginTurn();
 	void EndTurn();
 
-	static [[nodiscard]] unique_ptr<Player> CreateIronclad();
+	[[nodiscard]] static unique_ptr<Player> CreateIronclad();
 };
 
 
@@ -79,12 +82,12 @@ class EnemyAction
 public:
 	int dmg = 0;
 	int block = 0;
-	bool done;
+	bool done = false;
 	EnemyActionType type;
 
 	EnemyAction(EnemyActionType type) : type(type) {}
 	virtual void Do(Player* p, Enemy* me);
-	[[nodiscard]] virtual std::string ToString();
+	std::string ToString() const;
 };
 
 
@@ -96,9 +99,9 @@ public:
 	explicit Enemy(int hp) : Entity(hp) {}
 
 	[[nodiscard]] virtual std::unique_ptr<EnemyAction> GetNextAction() = 0;
+	[[nodiscard]] const EnemyAction& GetIntention();
 
 	void DoNextAction(Player* p);
-	[[nodiscard]] std::string GetIntention();
 
 	[[nodiscard]] std::string ToString() const { return std::string("Bird ") + std::to_string(hp); }
 	[[nodiscard]] bool DidAction(EnemyActionType type, int rounds) const;

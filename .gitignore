@@ -1,1 +1,3 @@
 build/
+SFML/
+compile_flags.txt

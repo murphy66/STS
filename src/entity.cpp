@@ -90,6 +90,7 @@ void Player::DrawCards(int num)
 {
 	for (int i = 0; i < num; ++i)
 		DrawCard();
+    std::sort(hand.begin(), hand.end(), [](const Card* c1, const Card* c2) { return c1->type < c2->type; });
 }
 
 bool Player::PlayCard(size_t idx, Entity* e)
@@ -136,9 +137,9 @@ bool Player::Discard(int idx)
 void Player::BeginTurn()
 {
 	Entity::BeginTurn();
-	energy = 3;
+	energy = maxEnergy;
 	block = 0;
-	DrawCards(5);
+	DrawCards(nDrawCard);
 }
 
 void Player::EndTurn()
@@ -175,14 +176,14 @@ void Enemy::DoNextAction(Player* p)
 	return actions.back()->Do(p, this);
 }
 
-[[nodiscard]] std::string Enemy::GetIntention()
+[[nodiscard]] const EnemyAction& Enemy::GetIntention()
 {
 	if (actions.empty() || actions.back()->done)
 		actions.push_back(std::move(GetNextAction()));
-	return actions.back()->ToString();
+	return *actions.back();
 }
 
-[[nodiscard]] std::string EnemyAction::ToString()
+[[nodiscard]] std::string EnemyAction::ToString() const
 {
 	std::stringstream ss;
 	if (dmg > 0)

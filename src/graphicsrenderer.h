@@ -1,8 +1,8 @@
 #pragma once
 
 #include "floor.h"
-#include <SFML/window.hpp>
-#include <SFML/graphics.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include <functional>
 #include <mutex>
 #include <condition_variable>
@@ -19,7 +19,6 @@ public:
 	bool IsEmpty() const { return actions.empty(); }
 	bool DoNextPlayerAction(Floor& f);
 };
-
 
 struct Button
 {

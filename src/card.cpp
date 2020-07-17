@@ -1,4 +1,5 @@
 #include "card.h"
+#include "entity.h"
 
 bool Card::Play(Player* p, Entity* e)
 {
